@@ -1,4 +1,4 @@
-package br.com.pr.alura.androidaula1;
+package br.com.pr.alura.listadealunos;
 
 import android.content.Context;
 
