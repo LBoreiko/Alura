@@ -2,9 +2,12 @@ package br.com.pr.alura.listadealunos.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +20,7 @@ import java.util.List;
 
 import br.com.pr.alura.androidaula1.R;
 import br.com.pr.alura.listadealunos.dao.AlunoDao;
+import br.com.pr.alura.listadealunos.model.Aluno;
 
 public class ListaAlunosActivity extends AppCompatActivity {
 
@@ -29,6 +33,8 @@ public class ListaAlunosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_alunos);
         setTitle(TITULO_APPBAR);
         configuraFABNovoAluno();
+        dao.salvar(new Aluno("Leonardo", "991851861", "boreiko@alura.com.br"));
+        dao.salvar(new Aluno("Fernanda", "998455897", "ferboreiko@gmail.com"));
     }
 
     private void configuraFABNovoAluno() {
@@ -54,6 +60,20 @@ public class ListaAlunosActivity extends AppCompatActivity {
 
     private void configuraLista() {
         ListView listaAlunos = findViewById(R.id.activity_lista_alunos_listview);
-        listaAlunos.setAdapter(new ArrayAdapter(this, android.R.layout.simple_list_item_1, dao.todosalunos()));
+        final List<Aluno> alunos = dao.todosalunos();
+        listaAlunos.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, alunos));
+        listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//          Faz a chamada dos dados do aluno clicado na lista
+
+                Aluno alunoEscolhido = alunos.get(position);
+                Intent vaiParaFormularioActivity = new Intent(ListaAlunosActivity.this, FormularioAlunoActivity.class);
+                vaiParaFormularioActivity.putExtra("aluno", alunoEscolhido);
+                startActivity(vaiParaFormularioActivity);
+                //Log.i("posicao aluno", "" + position);
+            }
+        });
+        
     }
 }

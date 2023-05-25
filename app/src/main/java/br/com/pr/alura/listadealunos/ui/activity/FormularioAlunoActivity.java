@@ -1,5 +1,6 @@
 package br.com.pr.alura.listadealunos.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,24 +9,35 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
+
 import br.com.pr.alura.androidaula1.R;
 import br.com.pr.alura.listadealunos.dao.AlunoDao;
 import br.com.pr.alura.listadealunos.model.Aluno;
 
 public class FormularioAlunoActivity extends AppCompatActivity {
 
+    private static final String TITULO_APPBAR = "Novo Aluno";
     private EditText campoNome;
     private EditText campoTelefone;
     private EditText campoEmail;
     private final AlunoDao dao = new AlunoDao();
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_aluno);
-        setTitle("Novo aluno");
+        setTitle(TITULO_APPBAR);
         inicializacaoDosCampos();
         configuraBotaoSalvar();
+
+        Intent dadosAlunoEscolhido = getIntent();
+        Aluno aluno = (Aluno) dadosAlunoEscolhido.getSerializableExtra("aluno");
+        campoNome.setText(aluno.getNome());
+        campoTelefone.setText(aluno.getTelefone());
+        campoEmail.setText(aluno.getEmail());
     }
 
     private void configuraBotaoSalvar() {
