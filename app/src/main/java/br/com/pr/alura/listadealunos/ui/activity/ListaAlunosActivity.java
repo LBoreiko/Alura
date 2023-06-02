@@ -1,15 +1,21 @@
 package br.com.pr.alura.listadealunos.ui.activity;
 
+import static android.view.LayoutInflater.from;
 import static br.com.pr.alura.listadealunos.ui.activity.ConstantesActivities.CHAVE_ALUNO;
 
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -18,19 +24,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pr.alura.androidaula1.R;
 import br.com.pr.alura.listadealunos.dao.AlunoDao;
 import br.com.pr.alura.listadealunos.model.Aluno;
+import br.com.pr.alura.listadealunos.ui.adapter.ListaAlunosAdapter;
 
 public class ListaAlunosActivity extends AppCompatActivity {
 
     private static final String TITULO_APPBAR = "Lista de alunos";
     private final AlunoDao dao = new AlunoDao();
-
-    private ArrayAdapter<Aluno> adapter;
-
+    private ListaAlunosAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,9 +59,8 @@ public class ListaAlunosActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        CharSequence itemTitle = item.getTitle();
         if (itemId == R.id.activity_lista_alunos_menu_remover) {
             AdapterView.AdapterContextMenuInfo menuInfo =
                     (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -64,6 +69,7 @@ public class ListaAlunosActivity extends AppCompatActivity {
         }
         return super.onContextItemSelected(item);
     }
+
 
     private void configuraFABNovoAluno() {
         FloatingActionButton botaoNovoAluno = findViewById(R.id.activity_lista_alunos_fab_novo_aluno);
@@ -120,8 +126,8 @@ public class ListaAlunosActivity extends AppCompatActivity {
     }
 
     private void configuraAdapter(ListView listaAlunos) {
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        adapter = new ListaAlunosAdapter(this);
         listaAlunos.setAdapter(adapter);
-    }
 
+    }
 }
