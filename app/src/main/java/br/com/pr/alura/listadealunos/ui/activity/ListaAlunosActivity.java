@@ -1,31 +1,19 @@
 package br.com.pr.alura.listadealunos.ui.activity;
 
-import static android.view.LayoutInflater.from;
 import static br.com.pr.alura.listadealunos.ui.activity.ConstantesActivities.CHAVE_ALUNO;
 
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import br.com.pr.alura.androidaula1.R;
 import br.com.pr.alura.listadealunos.dao.AlunoDao;
@@ -46,11 +34,7 @@ public class ListaAlunosActivity extends AppCompatActivity {
         configuraFABNovoAluno();
         configuraLista();
 
-            dao.salvar(new Aluno("Leonardo", "991851861", "boreiko@alura.com.br"));
-            dao.salvar(new Aluno("Fernanda", "998455897", "ferboreiko@gmail.com"));
-            dao.salvar(new Aluno("Gabriela", "665669633", "gabiboreiko@gmail.com"));
-
-        }
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -93,8 +77,7 @@ public class ListaAlunosActivity extends AppCompatActivity {
     }
 
     private void atualizaAlunos() {
-        adapter.clear();
-        adapter.addAll(dao.todosalunos());
+        adapter.atualiza(dao.todosalunos());
     }
 
     private void configuraLista() {
