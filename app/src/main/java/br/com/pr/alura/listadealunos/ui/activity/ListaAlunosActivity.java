@@ -1,21 +1,23 @@
 package br.com.pr.alura.listadealunos.ui.activity;
 
+import static br.com.pr.alura.listadealunos.ui.activity.ConstantesActivities.CHAVE_ALUNO;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import br.com.pr.alura.androidaula1.R;
@@ -27,14 +29,40 @@ public class ListaAlunosActivity extends AppCompatActivity {
     private static final String TITULO_APPBAR = "Lista de alunos";
     private final AlunoDao dao = new AlunoDao();
 
+    private ArrayAdapter<Aluno> adapter;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_alunos);
         setTitle(TITULO_APPBAR);
         configuraFABNovoAluno();
-        dao.salvar(new Aluno("Leonardo", "991851861", "boreiko@alura.com.br"));
-        dao.salvar(new Aluno("Fernanda", "998455897", "ferboreiko@gmail.com"));
+        configuraLista();
+
+            dao.salvar(new Aluno("Leonardo", "991851861", "boreiko@alura.com.br"));
+            dao.salvar(new Aluno("Fernanda", "998455897", "ferboreiko@gmail.com"));
+            dao.salvar(new Aluno("Gabriela", "665669633", "gabiboreiko@gmail.com"));
+
+        }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.activity_lista_alunos_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        CharSequence itemTitle = item.getTitle();
+        if (itemId == R.id.activity_lista_alunos_menu_remover) {
+            AdapterView.AdapterContextMenuInfo menuInfo =
+                    (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            Aluno alunoEscolhido = adapter.getItem(menuInfo.position);
+            remove(alunoEscolhido);
+        }
+        return super.onContextItemSelected(item);
     }
 
     private void configuraFABNovoAluno() {
@@ -42,38 +70,58 @@ public class ListaAlunosActivity extends AppCompatActivity {
         botaoNovoAluno.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                abreFormularioAlunoActivity();
+                abreFormularioModoInsereAluno();
             }
         });
     }
 
-    private void abreFormularioAlunoActivity() {
-        startActivity(new Intent(ListaAlunosActivity.this,
-                FormularioAlunoActivity.class));
+    private void abreFormularioModoInsereAluno() {
+        startActivity(new Intent(this, FormularioAlunoActivity.class));
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        configuraLista();
+        atualizaAlunos();
+    }
+
+    private void atualizaAlunos() {
+        adapter.clear();
+        adapter.addAll(dao.todosalunos());
     }
 
     private void configuraLista() {
         ListView listaAlunos = findViewById(R.id.activity_lista_alunos_listview);
-        final List<Aluno> alunos = dao.todosalunos();
-        listaAlunos.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, alunos));
+        configuraAdapter(listaAlunos);
+        confuguraListenerDeClickPorItem(listaAlunos);
+        registerForContextMenu(listaAlunos);
+    }
+
+    private void remove(Aluno aluno) {
+        dao.remover(aluno);
+        adapter.remove(aluno);
+    }
+
+    private void confuguraListenerDeClickPorItem(ListView listaAlunos) {
         listaAlunos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//          Faz a chamada dos dados do aluno clicado na lista
-
-                Aluno alunoEscolhido = alunos.get(position);
-                Intent vaiParaFormularioActivity = new Intent(ListaAlunosActivity.this, FormularioAlunoActivity.class);
-                vaiParaFormularioActivity.putExtra("aluno", alunoEscolhido);
-                startActivity(vaiParaFormularioActivity);
-                //Log.i("posicao aluno", "" + position);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Aluno alunoEscolhido = (Aluno) adapterView.getItemAtPosition(position);
+                abreFormularioModoEditaAluno(alunoEscolhido);
             }
         });
-        
     }
+
+    private void abreFormularioModoEditaAluno(Aluno aluno) {
+        Intent vaiParaFormularioActivity = new Intent(ListaAlunosActivity.this, FormularioAlunoActivity.class);
+        vaiParaFormularioActivity.putExtra(CHAVE_ALUNO, aluno);
+        startActivity(vaiParaFormularioActivity);
+    }
+
+    private void configuraAdapter(ListView listaAlunos) {
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        listaAlunos.setAdapter(adapter);
+    }
+
 }
