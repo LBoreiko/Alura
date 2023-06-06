@@ -15,7 +15,8 @@
         android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_action_novo_aluno" />
+        android:src="@drawable/ic_action_novo_aluno"
+        android:importantForAccessibility="no" />
 
     <ListView
         android:id="@+id/activity_lista_alunos_listview"
